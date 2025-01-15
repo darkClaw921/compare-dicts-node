@@ -98,6 +98,13 @@ export class CompareDictionaries implements INodeType {
 						default: true,
 						description: 'Игнорировать пустые строки при сравнении',
 					},
+					{
+						displayName: 'Continue On Error',
+						name: 'continueOnError',
+						type: 'boolean',
+						default: false,
+						description: 'Продолжить выполнение даже при возникновении ошибок',
+					},
 				],
 			},
 		],
@@ -117,6 +124,9 @@ export class CompareDictionaries implements INodeType {
 				const input2 = this.getInputData(1);
 
 				if (!inputs[0] || !input2[0]) {
+					if (options.continueOnError) {
+						return [this.helpers.returnJsonArray([{}])];
+					}
 					throw new NodeOperationError(this.getNode(), 'Необходимы данные от обоих входных соединений');
 				}
 
@@ -132,6 +142,9 @@ export class CompareDictionaries implements INodeType {
 					firstDictionary = firstDictionaryStr ? JSON.parse(firstDictionaryStr) : {};
 					secondDictionary = secondDictionaryStr ? JSON.parse(secondDictionaryStr) : {};
 				} catch (error) {
+					if (options.continueOnError) {
+						return [this.helpers.returnJsonArray([{}])];
+					}
 					throw new NodeOperationError(this.getNode(), 'Неверный формат JSON в одном из словарей');
 				}
 			}
@@ -159,6 +172,10 @@ export class CompareDictionaries implements INodeType {
 			// Возвращаем только различающиеся поля
 			return [this.helpers.returnJsonArray([result])];
 		} catch (error) {
+			const options = this.getNodeParameter('options', 0) as IDataObject;
+			if (options.continueOnError) {
+				return [this.helpers.returnJsonArray([{}])];
+			}
 			if (error instanceof Error) {
 				throw new NodeOperationError(this.getNode(), `Ошибка при сравнении словарей: ${error.message}`);
 			}

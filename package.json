@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-compare-dicts",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "n8n node для сравнения словарей. Сравнение словарей по ключам и значениям. Возвращает только те поля, которые отличаются.",
   "keywords": [
     "n8n-community-node-package",
